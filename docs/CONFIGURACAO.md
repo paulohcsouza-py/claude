@@ -70,7 +70,9 @@ Em 1 minuto deve aparecer um ✅ verde. Isso cria as tabelas do sistema.
 1. Supabase → **Authentication** → **Users** → **Add user** → **Create new user**.
 2. Preencha e-mail e senha (mínimo 8 caracteres) e marque **Auto Confirm User** → **Create user**.
 3. Repita para o Paulo.
-4. Entre no sistema e ajuste o nome em **Minha conta** (o nome inicial vem do e-mail).
+4. **Dar acesso total ao Paulo:** entre no sistema com o usuário da Josi → **Configurações** →
+   **Equipe** → no cartão do Paulo, troque **Operador** por **Administradora** → **Salvar**.
+5. Cada um ajusta o próprio nome em **Minha conta** (o nome inicial vem do e-mail).
 
 Para desativar alguém ou trocar o papel: no sistema, **Configurações → Equipe** (só a Josi).
 Para redefinir uma senha esquecida: Supabase → **Authentication** → **Users** → clique no
@@ -78,7 +80,9 @@ usuário → **Send password recovery** (ou exclua e crie de novo).
 
 ## 5. Instalar no celular
 
-- **iPhone (Safari):** abra o endereço do sistema → botão **Compartilhar** → **Adicionar à Tela de Início**.
+- **iPhone:** abra o endereço do sistema no **Safari** → botão **Compartilhar** (quadrado com seta para cima)
+  → role e toque em **Adicionar à Tela de Início** → **Adicionar**. Abra sempre pelo ícone na tela
+  (abre em tela cheia, como um app). No primeiro acesso, faça o login e marque para o iPhone salvar a senha.
 - **Android (Chrome):** abra o endereço → menu **⋮** → **Instalar app** (ou "Adicionar à tela inicial").
 
 O ícone "JC" marsala aparece na tela, e o sistema abre como um aplicativo.
