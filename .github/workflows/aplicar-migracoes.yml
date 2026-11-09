@@ -1,0 +1,43 @@
+name: Aplicar migrações do banco
+
+# Atualiza a estrutura do banco (tabelas, permissões) sempre que uma
+# migração nova chega na branch principal do repositório.
+on:
+  push:
+    paths:
+      - "supabase/migrations/**"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: aplicar-migracoes
+  cancel-in-progress: false
+
+jobs:
+  migrar:
+    # Só a branch principal (de produção) mexe no banco de produção
+    if: github.ref_name == github.event.repository.default_branch
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Conferir segredo
+        env:
+          SUPABASE_DB_URL: ${{ secrets.SUPABASE_DB_URL }}
+        run: |
+          if [ -z "$SUPABASE_DB_URL" ]; then
+            echo "::error::Cadastre o segredo SUPABASE_DB_URL (veja docs/CONFIGURACAO.md)."
+            exit 1
+          fi
+
+      - uses: supabase/setup-cli@v1
+        with:
+          version: 3.1.0
+
+      - name: Aplicar migrações pendentes
+        env:
+          SUPABASE_DB_URL: ${{ secrets.SUPABASE_DB_URL }}
+        run: supabase db push --remote="$SUPABASE_DB_URL" --include-all --yes

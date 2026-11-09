@@ -1,0 +1,53 @@
+name: Backup do banco
+
+on:
+  schedule:
+    # Toda segunda-feira às 03:17 (horário de Brasília = 06:17 UTC)
+    - cron: "17 6 * * 1"
+  workflow_dispatch: # botão "Run workflow" para backup manual
+
+permissions:
+  contents: read
+
+concurrency:
+  group: backup-banco
+  cancel-in-progress: false
+
+jobs:
+  backup:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Conferir segredos
+        env:
+          SUPABASE_DB_URL: ${{ secrets.SUPABASE_DB_URL }}
+          BACKUP_SENHA: ${{ secrets.BACKUP_SENHA }}
+        run: |
+          if [ -z "$SUPABASE_DB_URL" ] || [ -z "$BACKUP_SENHA" ]; then
+            echo "::error::Cadastre os segredos SUPABASE_DB_URL e BACKUP_SENHA (veja docs/CONFIGURACAO.md)."
+            exit 1
+          fi
+
+      - name: Instalar cliente PostgreSQL 17
+        run: |
+          sudo apt-get update -qq
+          sudo apt-get install -y -qq postgresql-common
+          sudo /usr/share/postgresql-common/pgdg/apt.postgresql.org.sh -y
+          sudo apt-get install -y -qq postgresql-client-17
+          echo "/usr/lib/postgresql/17/bin" >> "$GITHUB_PATH"
+
+      - name: Gerar backup criptografado
+        env:
+          SUPABASE_DB_URL: ${{ secrets.SUPABASE_DB_URL }}
+          BACKUP_SENHA: ${{ secrets.BACKUP_SENHA }}
+        run: scripts/backup-banco.sh backups
+
+      - name: Guardar backup (90 dias)
+        uses: actions/upload-artifact@v4
+        with:
+          name: backup-banco-${{ github.run_number }}
+          path: backups/*.gpg
+          retention-days: 90
+          if-no-files-found: error

@@ -1,0 +1,76 @@
+@import "tailwindcss";
+
+/* ------------------------------------------------------------------
+   Identidade visual — Josi Corrêa Boutique
+   Marsala (primária), dourado, nude e off-white
+   ------------------------------------------------------------------ */
+@theme {
+  --color-marsala-50: #fbf3f4;
+  --color-marsala-100: #f5e3e6;
+  --color-marsala-200: #e9c3ca;
+  --color-marsala-300: #d698a3;
+  --color-marsala-400: #b8606f;
+  --color-marsala-500: #94394a;
+  --color-marsala-600: #7a2a39;
+  --color-marsala-700: #661f2d; /* cor da marca */
+  --color-marsala-800: #4f1823;
+  --color-marsala-900: #361017;
+
+  --color-dourado-100: #f6eedd;
+  --color-dourado-200: #ead9b5;
+  --color-dourado-300: #d9bd85;
+  --color-dourado-400: #c6a35f;
+  --color-dourado-500: #b08a45;
+  --color-dourado-600: #8e6d33;
+  --color-dourado-700: #6b5126;
+
+  --color-nude-50: #fbf6f2;
+  --color-nude-100: #f4e9e0;
+  --color-nude-200: #e8d5c4;
+  --color-nude-300: #d8bca5;
+  --color-nude-400: #c2a084;
+
+  --color-offwhite: #faf7f2;
+  --color-tinta: #2b1d20;       /* texto principal */
+  --color-tinta-suave: #6e5a5e; /* texto secundário */
+  --color-linha: #eadfd6;       /* bordas */
+
+  --font-sans: "Inter Variable", ui-sans-serif, system-ui, sans-serif;
+  --font-serif: "Playfair Display Variable", ui-serif, Georgia, serif;
+
+  --radius-xl: 0.875rem;
+  --radius-2xl: 1.125rem;
+
+  --shadow-suave: 0 1px 2px rgb(54 16 23 / 0.04), 0 4px 16px rgb(54 16 23 / 0.06);
+}
+
+@layer base {
+  html {
+    -webkit-tap-highlight-color: transparent;
+  }
+  body {
+    background: var(--color-offwhite);
+    color: var(--color-tinta);
+    font-family: var(--font-sans);
+    font-feature-settings: "cv11", "ss01";
+  }
+  h1, h2, h3 {
+    font-family: var(--font-serif);
+    font-weight: 500;
+    letter-spacing: -0.005em;
+  }
+  :focus-visible {
+    outline: 2px solid var(--color-dourado-400);
+    outline-offset: 2px;
+  }
+}
+
+/* Espaço para a barra inferior do celular (inclui a área do "notch") */
+.pb-barra-inferior {
+  padding-bottom: calc(5.5rem + env(safe-area-inset-bottom));
+}
+@media (min-width: 1024px) {
+  .pb-barra-inferior {
+    padding-bottom: 2.5rem;
+  }
+}

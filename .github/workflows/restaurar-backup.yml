@@ -1,0 +1,66 @@
+name: Restaurar backup
+
+# Restaura um backup em um projeto Supabase NOVO (vazio).
+# Nunca sobrescreve um banco com dados: o script recusa se o destino não estiver vazio.
+on:
+  workflow_dispatch:
+    inputs:
+      execucao_backup:
+        description: "Número da execução do backup (os dígitos no fim do endereço da página do backup)"
+        required: true
+      confirmacao:
+        description: 'Digite RESTAURAR para confirmar'
+        required: true
+
+permissions:
+  contents: read
+  actions: read
+
+jobs:
+  restaurar:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
+    steps:
+      - name: Conferir confirmação e segredos
+        env:
+          CONFIRMACAO: ${{ inputs.confirmacao }}
+          RESTAURAR_DB_URL: ${{ secrets.RESTAURAR_DB_URL }}
+          BACKUP_SENHA: ${{ secrets.BACKUP_SENHA }}
+        run: |
+          if [ "$CONFIRMACAO" != "RESTAURAR" ]; then
+            echo "::error::Confirmação incorreta. Digite RESTAURAR (em maiúsculas)."; exit 1
+          fi
+          if [ -z "$RESTAURAR_DB_URL" ] || [ -z "$BACKUP_SENHA" ]; then
+            echo "::error::Cadastre os segredos RESTAURAR_DB_URL e BACKUP_SENHA (veja docs/CONFIGURACAO.md)."; exit 1
+          fi
+
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0 # histórico completo: a estrutura é recriada na versão do backup
+
+      - name: Instalar cliente PostgreSQL 17
+        run: |
+          sudo apt-get update -qq
+          sudo apt-get install -y -qq postgresql-common
+          sudo /usr/share/postgresql-common/pgdg/apt.postgresql.org.sh -y
+          sudo apt-get install -y -qq postgresql-client-17
+          echo "/usr/lib/postgresql/17/bin" >> "$GITHUB_PATH"
+
+      - uses: supabase/setup-cli@v1
+        with:
+          version: 3.1.0
+
+      - name: Baixar o backup escolhido
+        uses: actions/download-artifact@v4
+        with:
+          run-id: ${{ inputs.execucao_backup }}
+          github-token: ${{ github.token }}
+          pattern: backup-banco-*
+          merge-multiple: true
+          path: restaurar
+
+      - name: Restaurar
+        env:
+          RESTAURAR_DB_URL: ${{ secrets.RESTAURAR_DB_URL }}
+          BACKUP_SENHA: ${{ secrets.BACKUP_SENHA }}
+        run: scripts/restaurar-backup.sh "$(ls restaurar/*.gpg | head -1)"
